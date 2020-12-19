@@ -1,13 +1,15 @@
 enablePlugins(ScalaJSPlugin)
 
+semanticdbEnabled := true
+
 name := "astone"
-scalaVersion := "2.13.3"
+scalaVersion := "3.0.0-M2"
+scalaJSStage := FullOptStage
 
 scalaJSUseMainModuleInitializer := true
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "1.0.0",
-  "com.lihaoyi" %%% "utest" % "0.7.4" % "test"
+  "org.scala-js" % "scalajs-dom_sjs1_2.13" % "1.0.0"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")
