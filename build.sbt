@@ -2,16 +2,37 @@ enablePlugins(ScalaJSPlugin)
 
 semanticdbEnabled := true
 
-name := "astone"
-scalaVersion := "3.0.0-M2"
-scalaJSStage := FullOptStage
+lazy val root = project.in(file("."))
+  .aggregate(astone)
 
-scalaJSUseMainModuleInitializer := true
+lazy val astone = project.in(file("astone"))
+  .settings(
+    name := "astone",
+    scalaVersion := "3.0.0-M2",
+    libraryDependencies ++= Seq(
+      "org.scala-js" % "scalajs-dom_sjs1_2.13" % "1.0.0"
+    ),
+    Compile / npmDependencies ++= Seq(
+      "three" -> "0.123.0"
+    ),
+    Compile / npmDevDependencies ++= Seq(
+      "url-loader" -> "4.1.1",
+      "acorn-dynamic-import" -> "4.0.0"
+    ),
+    webpack / version := "4.44.2",
+    scalaJSUseMainModuleInitializer := true,
+    // jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+    webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
+  )
+  .dependsOn(three)
+  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
 
-libraryDependencies ++= Seq(
-  "org.scala-js" % "scalajs-dom_sjs1_2.13" % "1.0.0"
-)
-
-testFrameworks += new TestFramework("utest.runner.Framework")
-
-jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+lazy val three = project.in(file("three"))
+  .settings(
+    name := "scala-three",
+    scalaVersion := "3.0.0-M2",
+    libraryDependencies ++= Seq(
+      "org.scala-js" % "scalajs-dom_sjs1_2.13" % "1.0.0"
+    )
+  )
+  .enablePlugins(ScalaJSPlugin)
