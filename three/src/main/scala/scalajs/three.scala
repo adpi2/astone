@@ -43,6 +43,9 @@ object three extends js.Object:
     val rotation: Euler = js.native
 
   @js.native
+  class Font(data: js.Object) extends js.Object
+
+  @js.native
   trait Camera extends Object3D
 
   @js.native
@@ -53,11 +56,14 @@ object three extends js.Object:
   trait Geometry extends js.Object
 
   @js.native
-  class BoxGeometry() extends Geometry
+  class BoxGeometry(width: Double, height: Double, depth: Double) extends Geometry
 
   @js.native
   class BufferGeometry() extends Geometry:
     def setFromPoints(points: js.Array[Vector3]): Unit = js.native
+
+  @js.native
+  class TextGeometry(text: String, parameters: js.Dynamic) extends Geometry
 
   @js.native
   trait Material extends js.Object
@@ -86,7 +92,10 @@ object three extends js.Object:
     var wrapT: Wrapping = js.native
     val repeat: Vector2 = js.native
 
-
   @js.native
   class TextureLoader() extends js.Object:
-    def load(file: String): Texture = js.native
+    def load(url: String): Texture = js.native
+
+  @js.native
+  class FontLoader() extends js.Object:
+    def load(url: String): Font = js.native

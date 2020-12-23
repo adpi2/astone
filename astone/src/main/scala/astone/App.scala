@@ -6,10 +6,6 @@ import scalajs.three._
 import org.scalajs.dom._
 import scala.scalajs.js.annotation.JSImport
 
-@JSImport("./Tis-the-Season.jpg", JSImport.Default)
-@js.native
-val tisTheSeason: String = js.native
-
 object App:
   def main(args: Array[String]): Unit =
     document.addEventListener[Event](
@@ -31,7 +27,7 @@ object App:
       renderer.render(Scene, camera)
 
     animate()
-
+    
     document.body.appendChild(renderer.domElement)
 
 

@@ -21,7 +21,6 @@ lazy val astone = project.in(file("astone"))
     ),
     webpack / version := "4.44.2",
     scalaJSUseMainModuleInitializer := true,
-    // jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
     webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
   )
   .dependsOn(three)
