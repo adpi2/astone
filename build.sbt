@@ -25,13 +25,3 @@ lazy val astone = project.in(file("astone"))
   )
   .dependsOn(three)
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
-
-lazy val three = project.in(file("three"))
-  .settings(
-    name := "scala-three",
-    scalaVersion := "3.0.0-M2",
-    libraryDependencies ++= Seq(
-      "org.scala-js" % "scalajs-dom_sjs1_2.13" % "1.0.0"
-    )
-  )
-  .enablePlugins(ScalaJSPlugin)

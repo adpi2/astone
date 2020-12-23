@@ -2,7 +2,7 @@ package astone
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
-import scalajs.three._
+import facade.three._
 import org.scalajs.dom._
 import scala.scalajs.js.annotation.JSImport
 

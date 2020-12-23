@@ -3,7 +3,7 @@ package astone
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.Dynamic.literal
-import scalajs.three._
+import facade.three._
 
 @JSImport("./Tis-the-Season.jpg", JSImport.Default)
 @js.native
@@ -13,7 +13,7 @@ val tisTheSeason: String = js.native
 @js.native
 val helvetiker: js.Object = js.native
 
-object Scene extends scalajs.three.Scene:
+object Scene extends facade.three.Scene:
   val texture = TextureLoader().load(tisTheSeason)
   texture.wrapS = RepeatWrapping
   texture.wrapT = RepeatWrapping

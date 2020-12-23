@@ -1,5 +1,4 @@
-
-package scalajs
+package facade
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSImport, JSGlobal}
