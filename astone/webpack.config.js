@@ -1,6 +1,6 @@
 module.exports = {
   entry: {
-    "astone-fastopt": ['/home/piquerez/dashpi2/astone/astone/target/scala-3.0.0-M2/scalajs-bundler/main/astone-fastopt.js']
+    "astone-fastopt": ['/home/piquerez/dashpi2/astone/astone/target/scala-3.0.0-M3/scalajs-bundler/main/astone-fastopt.js']
   },
   output: {
     path: '/home/piquerez/dashpi2/astone/astone/target/scala-3.0.0-M2/scalajs-bundler/main',

@@ -8,7 +8,7 @@ lazy val root = project.in(file("."))
 lazy val astone = project.in(file("astone"))
   .settings(
     name := "astone",
-    scalaVersion := "3.0.0-M2",
+    scalaVersion := "3.0.0-M3",
     libraryDependencies ++= Seq(
       "org.scala-js" % "scalajs-dom_sjs1_2.13" % "1.0.0"
     ),
