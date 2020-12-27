@@ -1,7 +1,7 @@
 package facade
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSImport, JSGlobal}
+import scala.scalajs.js.annotation.JSImport
 import org.scalajs.dom.Node
 
 @JSImport("three", JSImport.Namespace)

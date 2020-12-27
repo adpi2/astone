@@ -3,7 +3,7 @@ module.exports = {
     "astone-fastopt": ['/home/piquerez/dashpi2/astone/astone/target/scala-3.0.0-M3/scalajs-bundler/main/astone-fastopt.js']
   },
   output: {
-    path: '/home/piquerez/dashpi2/astone/astone/target/scala-3.0.0-M2/scalajs-bundler/main',
+    path: '/home/piquerez/dashpi2/astone/astone/target/scala-3.0.0-M3/scalajs-bundler/main',
     filename: '[name]-bundle.js'
   },
   mode: 'development',
@@ -16,9 +16,18 @@ module.exports = {
         use: ['source-map-loader']
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(png|svg|jpe?g|gif|cascade)$/i,
         use: ['url-loader']
-      }
+      },
+      // {
+      //   test: /\.(cascade)$/i,
+      //   use: ['raw-loader']
+      // }
+      // {
+      //   test: /\.(wasm)$/i,
+      //   use: ['file-loader'],
+      //   type: 'javascript/auto'
+      // }
     ]
   }
 }

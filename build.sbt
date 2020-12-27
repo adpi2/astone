@@ -16,12 +16,13 @@ lazy val astone = project.in(file("astone"))
       "three" -> "0.123.0"
     ),
     Compile / npmDevDependencies ++= Seq(
+      "acorn-dynamic-import" -> "4.0.0",
       "url-loader" -> "4.1.1",
-      "acorn-dynamic-import" -> "4.0.0"
+      "raw-loader" -> "4.0.2"
+      // "file-loader" -> "6.2.0"
     ),
     webpack / version := "4.44.2",
     scalaJSUseMainModuleInitializer := true,
     webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
   )
-  .dependsOn(three)
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)

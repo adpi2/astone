@@ -1,17 +1,17 @@
 package astone
 
-import scala.scalajs.js
-import scala.scalajs.js.Dynamic.literal
-import facade.three._
 import org.scalajs.dom._
-import scala.scalajs.js.annotation.JSImport
+
+import facade.three.{PerspectiveCamera, WebGLRenderer}
 
 object App:
   def main(args: Array[String]): Unit =
     document.addEventListener[Event](
       "DOMContentLoaded",
       _ => 
-        setupScene()
+        try 
+          FaceDetection.setup()
+        catch e => println(e)
     )
 
   private def setupScene(): Unit =
@@ -29,5 +29,3 @@ object App:
     animate()
     
     document.body.appendChild(renderer.domElement)
-
-
