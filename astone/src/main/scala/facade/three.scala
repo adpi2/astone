@@ -2,7 +2,7 @@ package facade
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-import org.scalajs.dom.Node
+import org.scalajs.dom.raw.HTMLCanvasElement
 
 @JSImport("three", JSImport.Namespace)
 @js.native
@@ -33,7 +33,7 @@ object three extends js.Object:
   @js.native
   class WebGLRenderer() extends js.Object:
     def setSize(width: Double, height: Double): Unit = js.native
-    def domElement: Node = js.native
+    def domElement: HTMLCanvasElement = js.native
     def render(scene: Scene, camera: Camera): Unit = js.native
 
   @js.native

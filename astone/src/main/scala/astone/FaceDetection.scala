@@ -1,57 +1,33 @@
 package astone
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.typedarray.Int8Array
 
-import org.scalajs.dom._
+import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.raw.{HTMLElement, HTMLCanvasElement}
 import org.scalajs.dom.experimental.Fetch
 
 import facade.pico
-import facade.camvas.camvas
 
 @JSImport("./facefinder.cascade", JSImport.Default)
 @js.native
 val facefinderUrl: String = js.native
 
-object FaceDetection:
-  def setup(): Unit =
-    val button = document.createElement("button")
-    button.textContent = "Start Detection"
-    button.addEventListener[MouseEvent]("click", e => startDetection())
-    document.body.appendChild(button)
+class FaceDetection(canvas: HTMLCanvasElement, cascade: pico.Cascade):
+  private val updateMemory = pico.instantiate_detection_memory(5)
 
-  private val canvas: HTMLCanvasElement =
-    document.body.getElementsByTagName("canvas").item(0)
-      .asInstanceOf[HTMLCanvasElement]
-  
-  private val ctx: CanvasRenderingContext2D =
-    canvas.getContext("2d")
-      .asInstanceOf[CanvasRenderingContext2D]
+  private val ctx: CanvasRenderingContext2D = 
+    canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
-  private def startDetection(): Future[Unit] =
-    val updateMemory = pico.instantiate_detection_memory(5)
-    for 
-      response <- Fetch.fetch(facefinderUrl).toFuture
-      buffer <- response.arrayBuffer.toFuture
-    yield
-      val bytes = new Int8Array(buffer)
-      val cascade = pico.unpack_cascade(bytes)
-      camvas(ctx, drawFaces(cascade, updateMemory))
-      ()
-
-  private def drawFaces(cascade: pico.Cascade, updateMemory: pico.UpdateMemory)(video: HTMLElement, dt: js.Object): Unit =
+  def draw(video: HTMLElement): Unit =
     ctx.drawImage(video, 0D, 0D)
-    val rgba = ctx.getImageData(0D, 0D, 640D, 480D).data
+    val rgba = ctx.getImageData(0D, 0D, canvas.width, canvas.height).data
     val image = pico.Image(
-      pixels= rgbaToGrayscale(rgba, nrows = 480, ncols = 640),
-      nrows = 480,
-      ncols = 640,
-      ldim = 640
+      pixels= rgbaToGrayscale(rgba, nrows = canvas.height, ncols = canvas.width),
+      nrows = canvas.height,
+      ncols = canvas.width,
+      ldim = canvas.width
     )
     val params = pico.Params(
       shiftfactor = 0.1,
