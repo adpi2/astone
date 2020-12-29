@@ -2,11 +2,8 @@ package astone
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-import scala.scalajs.js.typedarray.Int8Array
 
 import org.scalajs.dom.CanvasRenderingContext2D
-import org.scalajs.dom.raw.{HTMLElement, HTMLCanvasElement}
-import org.scalajs.dom.experimental.Fetch
 
 import facade.pico
 
@@ -14,20 +11,20 @@ import facade.pico
 @js.native
 val facefinderUrl: String = js.native
 
-class FaceDetection(canvas: HTMLCanvasElement, cascade: pico.Cascade):
+class FaceDetection(ctx: CanvasRenderingContext2D, cascade: pico.Cascade):
   private val updateMemory = pico.instantiate_detection_memory(5)
 
-  private val ctx: CanvasRenderingContext2D = 
-    canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+  private val canvas = ctx.canvas
+  private val width = canvas.width
+  private val height = canvas.height
 
-  def draw(video: HTMLElement): Unit =
-    ctx.drawImage(video, 0D, 0D)
-    val rgba = ctx.getImageData(0D, 0D, canvas.width, canvas.height).data
+  def draw(): Unit =
+    val rgba = ctx.getImageData(0D, 0D, width, height).data
     val image = pico.Image(
-      pixels= rgbaToGrayscale(rgba, nrows = canvas.height, ncols = canvas.width),
-      nrows = canvas.height,
-      ncols = canvas.width,
-      ldim = canvas.width
+      pixels= rgbaToGrayscale(rgba, nrows = height, ncols = width),
+      nrows = height,
+      ncols = width,
+      ldim = width
     )
     val params = pico.Params(
       shiftfactor = 0.1,
@@ -45,7 +42,7 @@ class FaceDetection(canvas: HTMLCanvasElement, cascade: pico.Cascade):
       val (row, col, scale, _) = face: (Double, Double, Double, Double)
       ctx.beginPath()
       ctx.arc(col, row, scale / 2, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 10
+      ctx.lineWidth = 3
       ctx.strokeStyle = "red"
       ctx.stroke()
     catch e => println(e)

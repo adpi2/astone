@@ -1,12 +1,11 @@
 enablePlugins(ScalaJSPlugin)
 
-semanticdbEnabled := true
-
 lazy val root = project.in(file("."))
   .aggregate(astone)
 
 lazy val astone = project.in(file("astone"))
   .settings(
+    resolvers += Resolver.jcenterRepo,
     name := "astone",
     scalaVersion := "3.0.0-M3",
     libraryDependencies ++= Seq(

@@ -21,8 +21,8 @@ object App:
       "DOMContentLoaded",
       _ => 
         try
+          setupDemoScene()
           setupFaceDetection()
-          setupScene()
         catch e => println(e)
     )
 
@@ -34,21 +34,28 @@ object App:
       val bytes = new Int8Array(buffer)
       val cascade = pico.unpack_cascade(bytes)
 
-      val canvas = document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
-      document.body.appendChild(canvas)
+      val detection = document.createElement("div")
+      detection.setAttribute("id", "detection")
+      document.body.appendChild(detection)
 
+      val canvasDiv = document.createElement("div")
+      val canvas = document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
+      canvasDiv.appendChild(canvas)
+      detection.appendChild(canvasDiv)
+
+      val buttonDiv = document.createElement("div")
       val button = document.createElement("button")
+      button.setAttribute("style", "float: right")
       button.textContent = "Start Detection"
       button.addEventListener[MouseEvent]("click", e => startDetection(canvas, cascade))
-      document.body.appendChild(button)
+      buttonDiv.appendChild(button)
+      detection.appendChild(buttonDiv)
 
   private def startDetection(canvas: HTMLCanvasElement, cascade: pico.Cascade): Unit =
     val video = document.createElement("video").asInstanceOf[HTMLVideoElement]
     video.setAttribute("autoplay", "1")
     video.setAttribute("style", "display:none")
     document.body.appendChild(video)
-    
-    val faceDetection = FaceDetection(canvas, cascade)
 
     val mediaConstraints = MediaStreamConstraints(video = true)
     for
@@ -56,26 +63,34 @@ object App:
     do
       video.srcObject = stream
       video.onloadedmetadata = _ =>
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        val width = 320
+        val height = (width * video.videoHeight) / video.videoWidth
 
-      def loop(): Unit =
-        faceDetection.draw(video)
+        canvas.width = width
+        canvas.height = height
+
+        val ctx = canvas.getContext("2d")
+          .asInstanceOf[CanvasRenderingContext2D]
+        val faceDetection = FaceDetection(ctx, cascade)
+
+        def loop(): Unit =
+          ctx.drawImage(video, 0D, 0D, width, height)
+          faceDetection.draw()
+          window.requestAnimationFrame(_ => loop())
+
         window.requestAnimationFrame(_ => loop())
 
-      window.requestAnimationFrame(_ => loop())
-
-  private def setupScene(): Unit =
+  private def setupDemoScene(): Unit =
     val camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
     val renderer = new WebGLRenderer()
-    renderer.setSize(window.innerWidth / 2, window.innerHeight / 2)
+    renderer.setSize(window.innerWidth, window.innerHeight)
 
     camera.position.z = 2
 
     def animate(): Unit =
       window.requestAnimationFrame(_ => animate())
-      Scene.nextFrame()
-      renderer.render(Scene, camera)
+      DemoScene.nextFrame()
+      renderer.render(DemoScene, camera)
 
     animate()
     

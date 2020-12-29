@@ -13,7 +13,7 @@ val tisTheSeason: String = js.native
 @js.native
 val helvetiker: js.Object = js.native
 
-object Scene extends facade.three.Scene:
+object DemoScene extends facade.three.Scene:
   val texture = TextureLoader().load(tisTheSeason)
   texture.wrapS = RepeatWrapping
   texture.wrapT = RepeatWrapping
