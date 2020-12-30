@@ -31,7 +31,7 @@ object three extends js.Object:
     def add(object3d: Object3D): Unit = js.native
 
   @js.native
-  class WebGLRenderer() extends js.Object:
+  class WebGLRenderer(parameters: js.Dynamic = null) extends js.Object:
     def setSize(width: Double, height: Double): Unit = js.native
     def domElement: HTMLCanvasElement = js.native
     def render(scene: Scene, camera: Camera): Unit = js.native
@@ -40,29 +40,48 @@ object three extends js.Object:
   trait Object3D extends js.Object:
     val position: Vector3 = js.native
     val rotation: Euler = js.native
+    def lookAt(x: Double, y: Double, z: Double): Unit = js.native
 
   @js.native
   class Font(data: js.Object) extends js.Object
 
+  /* Cameras */
   @js.native
   trait Camera extends Object3D
 
   @js.native
-  class PerspectiveCamera(fov: Int, aspectRatio: Double, near: Double, far: Double) extends Camera:
-    def lookAt(x: Double, y: Double, z: Double): Unit = js.native
+  class PerspectiveCamera(fov: Int, aspectRatio: Double, near: Double, far: Double) extends Camera
 
   @js.native
+  class OrthographicCamera(left: Double, right: Double, top: Double, bottom: Double, near: Double, far: Double) extends Camera
+
+  /* Geometries */
+  @js.native
   trait Geometry extends js.Object
+
+  @js.native
+  class PlaneGeometry(
+    width: Double = 1d, height: Double = 1d,
+    widthSegments: Int = 1, heightSegments: Int = 1
+  ) extends Geometry
 
   @js.native
   class BoxGeometry(width: Double, height: Double, depth: Double) extends Geometry
 
   @js.native
-  class BufferGeometry() extends Geometry:
-    def setFromPoints(points: js.Array[Vector3]): Unit = js.native
+  class SphereGeometry(
+    radius: Double = 1, widthSegments: Int = 8, heightSegments: Int = 6,
+    phiStart: Double = 0, phiLength: Double = Math.PI * 2,
+    thetaStart: Double = 0, thetaLength: Double =  Math.PI
+  ) extends Geometry
 
   @js.native
   class TextGeometry(text: String, parameters: js.Dynamic) extends Geometry
+
+  /* Buffer Geometries */
+  @js.native
+  class BufferGeometry() extends Geometry:
+    def setFromPoints(points: js.Array[Vector3]): Unit = js.native
 
   @js.native
   trait Material extends js.Object
@@ -74,10 +93,14 @@ object three extends js.Object:
   class LineBasicMaterial(parameters: js.Dynamic) extends Material
 
   @js.native
+  class LineDashedMaterial(parameters: js.Dynamic) extends Material
+
+  @js.native
   class Mesh(geometry: Geometry, material: Material) extends Object3D
 
   @js.native
-  class Line(geometry: Geometry, material: Material) extends Object3D
+  class Line(geometry: Geometry, material: Material) extends Object3D:
+    def computeLineDistances(): Line = js.native
 
   @js.native
   trait Wrapping extends js.Object
@@ -98,3 +121,6 @@ object three extends js.Object:
   @js.native
   class FontLoader() extends js.Object:
     def load(url: String): Font = js.native
+
+  /** Constants */
+  val DoubleSide: js.Object = js.native
