@@ -26,7 +26,7 @@ object App:
       "DOMContentLoaded",
       _ => 
         try
-          setupDemoScene()
+          // setupDemoScene()
           setupFaceDetection()
         catch e => println(e)
     )
@@ -39,6 +39,9 @@ object App:
       val bytes = new Int8Array(buffer)
       val cascade = pico.unpack_cascade(bytes)
 
+      val screenView = new WebGLRenderer()
+      screenView.setSize(window.innerWidth, window.innerHeight)
+
       val detection = document.createElement("div")
       detection.setAttribute("id", "detection")
       
@@ -50,22 +53,22 @@ object App:
       val frontView = WebGLRenderer()
       frontView.setSize(defaultWidth, defaultHeight)
       
-      
       val buttonDiv = document.createElement("div")
       val button = document.createElement("button")
       button.setAttribute("style", "float: right")
       button.textContent = "Start Detection"
-      button.addEventListener[MouseEvent]("click", e => startDetection(cam, cascade, frontView, topView))
+      button.addEventListener[MouseEvent]("click", e => startDetection(cam, cascade, frontView, topView, screenView))
 
       buttonDiv.appendChild(button)
       detection.appendChild(buttonDiv)
       detection.appendChild(cam)
       detection.appendChild(frontView.domElement)   
       detection.appendChild(topView.domElement)
+      document.body.appendChild(screenView.domElement)
       document.body.appendChild(detection)
       
 
-  private def startDetection(cam: HTMLCanvasElement, cascade: pico.Cascade, frontView: WebGLRenderer, topView: WebGLRenderer): Unit =
+  private def startDetection(cam: HTMLCanvasElement, cascade: pico.Cascade, frontView: WebGLRenderer, topView: WebGLRenderer, screenView: WebGLRenderer): Unit =
     val video = document.createElement("video").asInstanceOf[HTMLVideoElement]
     video.setAttribute("autoplay", "1")
     video.setAttribute("style", "display:none")
@@ -75,9 +78,9 @@ object App:
     for stream <- window.navigator.mediaDevices.getUserMedia(mediaConstraints).toFuture
     do video.srcObject = stream
     
-    video.onloadedmetadata = _ => onCamLoaded(video, cam, cascade, frontView, topView)
+    video.onloadedmetadata = _ => onCamLoaded(video, cam, cascade, frontView, topView, screenView)
   
-  private def onCamLoaded(video: HTMLVideoElement, cam: HTMLCanvasElement, cascade: pico.Cascade, frontView: WebGLRenderer, topView: WebGLRenderer): Unit =
+  private def onCamLoaded(video: HTMLVideoElement, cam: HTMLCanvasElement, cascade: pico.Cascade, frontView: WebGLRenderer, topView: WebGLRenderer, screenView: WebGLRenderer): Unit =
     val width = defaultWidth
     val height = (width * video.videoHeight) / video.videoWidth
     cam.width = width
@@ -92,7 +95,10 @@ object App:
     val diag = Math.sqrt(width * width + height * height)
     val focal = diag / (2D * Math.tan(diagViewAngle / 2D))
 
-    val scene = RealScene(focal, width, height, headSize)
+    val screenWidth = width
+    val screenHeight = window.innerHeight * width / window.innerWidth
+
+    val scene = RealScene(focal, width, height, screenWidth, screenHeight, headSize)
     val topCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 3d * focal)
     topCamera.position.y = 1.5 * height
     topCamera.position.z = 1.5 * defaultHeight
@@ -114,6 +120,7 @@ object App:
       do 
         scene.computeHeadPosition(detection)
         drawDetection(ctx, detection)
+      screenView.render(scene, scene.headCam)
       frontView.render(scene, frontCamera)
       topView.render(scene, topCamera)
       window.requestAnimationFrame(_ => loop())

@@ -58,7 +58,9 @@ object three extends js.Object:
   trait Camera extends Object3D
 
   @js.native
-  class PerspectiveCamera(fov: Double, aspectRatio: Double, near: Double, far: Double) extends Camera
+  class PerspectiveCamera(fov: Double, aspectRatio: Double, near: Double, far: Double) extends Camera:
+    def setViewOffset(fullWidth: Double, fullHeight: Double, x: Double, y: Double, width: Double, height: Double): Unit =
+      js.native
 
   @js.native
   class OrthographicCamera(left: Double, right: Double, top: Double, bottom: Double, near: Double, far: Double) extends Camera
