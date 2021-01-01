@@ -36,11 +36,19 @@ object three extends js.Object:
     def domElement: HTMLCanvasElement = js.native
     def render(scene: Scene, camera: Camera): Unit = js.native
 
+  /* Object */
+
   @js.native
   trait Object3D extends js.Object:
     val position: Vector3 = js.native
     val rotation: Euler = js.native
     def lookAt(x: Double, y: Double, z: Double): Unit = js.native
+
+  @js.native
+  class Group() extends Object3D:
+    def add(obj: Object3D): Unit = js.native
+
+  /* Font */
 
   @js.native
   class Font(data: js.Object) extends js.Object
@@ -50,10 +58,18 @@ object three extends js.Object:
   trait Camera extends Object3D
 
   @js.native
-  class PerspectiveCamera(fov: Int, aspectRatio: Double, near: Double, far: Double) extends Camera
+  class PerspectiveCamera(fov: Double, aspectRatio: Double, near: Double, far: Double) extends Camera
 
   @js.native
   class OrthographicCamera(left: Double, right: Double, top: Double, bottom: Double, near: Double, far: Double) extends Camera
+
+
+  /* Helpers */
+  @js.native
+  class CameraHelper(camera: Camera) extends LineSegments(js.native, js.native):
+    def pointMap: js.Object = js.native
+    def update(): Unit = js.native
+    var matrixAutoUpdate: Boolean = js.native
 
   /* Geometries */
   @js.native
@@ -83,6 +99,7 @@ object three extends js.Object:
   class BufferGeometry() extends Geometry:
     def setFromPoints(points: js.Array[Vector3]): Unit = js.native
 
+  /** Material */
   @js.native
   trait Material extends js.Object
 
@@ -101,6 +118,9 @@ object three extends js.Object:
   @js.native
   class Line(geometry: Geometry, material: Material) extends Object3D:
     def computeLineDistances(): Line = js.native
+
+  @js.native
+  class LineSegments(geometry: Geometry, material: Material) extends Object3D
 
   @js.native
   trait Wrapping extends js.Object

@@ -87,16 +87,20 @@ object App:
     // val heigth_mm = 194.4
     val head_mm = 160
     val headSize = head_mm * width / width_mm
+    val diagViewAngle = Math.toRadians(78D)
+    
+    val diag = Math.sqrt(width * width + height * height)
+    val focal = diag / (2D * Math.tan(diagViewAngle / 2D))
 
-    val scene = RealScene(width, height, headSize)
-    val topCamera = OrthographicCamera(-1.5D * width, 1.5D * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0, 3 * height)
+    val scene = RealScene(focal, width, height, headSize)
+    val topCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 3d * focal)
     topCamera.position.y = 1.5 * height
     topCamera.position.z = 1.5 * defaultHeight
-    topCamera.lookAt(0D, 0D, 1.5 * defaultHeight)
+    topCamera.lookAt(0d, 0d, 1.5 * defaultHeight)
 
-    val frontCamera = OrthographicCamera(-1.5D * width, 1.5D * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0, 3 * height)
-    frontCamera.position.z = 3* height
-    frontCamera.lookAt(0D, 0D, 0D)
+    val frontCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 6d * focal)
+    frontCamera.position.z = 6d * focal
+    frontCamera.lookAt(0d, 0d, 0d)
 
     val ctx = cam.getContext("2d")
       .asInstanceOf[CanvasRenderingContext2D]
