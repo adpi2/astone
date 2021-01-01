@@ -99,8 +99,9 @@ object App:
     topCamera.lookAt(0d, 0d, 1.5 * defaultHeight)
 
     val frontCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 6d * focal)
-    frontCamera.position.z = 6d * focal
-    frontCamera.lookAt(0d, 0d, 0d)
+    frontCamera.position.y = 0.5 * height 
+    frontCamera.position.z = 5d * focal
+    frontCamera.lookAt(0d, 0.5 * height, 0d)
 
     val ctx = cam.getContext("2d")
       .asInstanceOf[CanvasRenderingContext2D]
