@@ -98,6 +98,7 @@ object App:
     val screenWidth = width
     val screenHeight = window.innerHeight * width / window.innerWidth
 
+    val demoScene = DemoScene(screenWidth, screenHeight)
     val scene = RealScene(focal, width, height, screenWidth, screenHeight, headSize)
     val topCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 3d * focal)
     topCamera.position.y = 1.5 * height
@@ -120,9 +121,10 @@ object App:
       do 
         scene.computeHeadPosition(detection)
         drawDetection(ctx, detection)
-      screenView.render(scene, scene.headCam)
       frontView.render(scene, frontCamera)
       topView.render(scene, topCamera)
+      demoScene.nextFrame()
+      screenView.render(demoScene, scene.headCam)
       window.requestAnimationFrame(_ => loop())
 
     window.requestAnimationFrame(_ => loop())
@@ -130,23 +132,23 @@ object App:
   private def drawDetection(ctx: CanvasRenderingContext2D, face: FaceDetection): Unit =
     val (x, y, scale) = (face.x, face.y, face.scale)
     ctx.beginPath()
-    ctx.arc(x, y, scale / 2, 0, 2 * Math.PI, false)
-    ctx.lineWidth = 3
+    ctx.arc(x, y, 0.5 * scale, 0d, 2d * Math.PI, false)
+    ctx.lineWidth = 3d
     ctx.strokeStyle = "red"
     ctx.stroke()
 
-  private def setupDemoScene(): Unit =
-    val camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-    val renderer = new WebGLRenderer()
-    renderer.setSize(window.innerWidth, window.innerHeight)
+  // private def setupDemoScene(): Unit =
+  //   val camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
+  //   val renderer = new WebGLRenderer()
+  //   renderer.setSize(window.innerWidth, window.innerHeight)
 
-    camera.position.z = 2
+  //   camera.position.z = 2
 
-    def animate(): Unit =
-      window.requestAnimationFrame(_ => animate())
-      DemoScene.nextFrame()
-      renderer.render(DemoScene, camera)
+  //   def animate(): Unit =
+  //     window.requestAnimationFrame(_ => animate())
+  //     DemoScene.nextFrame()
+  //     renderer.render(DemoScene, camera)
 
-    animate()
+  //   animate()
     
-    document.body.appendChild(renderer.domElement)
+  //   document.body.appendChild(renderer.domElement)

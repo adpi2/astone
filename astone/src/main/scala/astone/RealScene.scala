@@ -1,7 +1,5 @@
 package astone
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.Dynamic.literal
 import facade.three._
 import astone.model.FaceDetection
@@ -11,7 +9,7 @@ class RealScene(focal: Double, camWidth: Double, camHeight: Double, screenWidth:
 
   private val origin =
     val geometry = SphereGeometry(30d, 10, 10)
-    val material = MeshBasicMaterial(literal(color = 0x0000ff, wireframe = true))
+    val material = MeshBasicMaterial(literal(color = 0x0000ff))
     Mesh(geometry, material)
 
   private val webcam = PerspectiveCamera(fov, camWidth / camHeight, focal, 3d * focal)
@@ -30,7 +28,7 @@ class RealScene(focal: Double, camWidth: Double, camHeight: Double, screenWidth:
     val material = MeshBasicMaterial(literal(color = 0xff0000))
     Mesh(geometry, material)
 
-  val headCam = PerspectiveCamera(fov, screenWidth / screenHeight, focal, 3d * focal)
+  val headCam = PerspectiveCamera(fov, screenWidth / screenHeight, focal, 10d * focal)
   private val headCamHelper = CameraHelper(headCam)
 
   private val head =

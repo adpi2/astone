@@ -14,7 +14,7 @@ import astone.model.FaceDetection
 val facefinderUrl: String = js.native
 
 class FaceDetector(cascade: pico.Cascade, height: Int, width: Int):
-  private val updateMemory = pico.instantiate_detection_memory(5)
+  private val updateMemory = pico.instantiate_detection_memory(1)
 
   private val params = pico.Params(
     shiftfactor = 0.1,

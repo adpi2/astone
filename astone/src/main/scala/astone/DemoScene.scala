@@ -13,50 +13,34 @@ val tisTheSeason: String = js.native
 @js.native
 val helvetiker: js.Object = js.native
 
-object DemoScene extends facade.three.Scene:
+class DemoScene(screenWidth: Double, screenHeight: Double) extends facade.three.Scene:
   val texture = TextureLoader().load(tisTheSeason)
   texture.wrapS = RepeatWrapping
   texture.wrapT = RepeatWrapping
   
   val cube =
-    val geometry = BoxGeometry(0.3, 0.3, 0.3)
+    val geometry = BoxGeometry(0.1 * screenWidth, 0.1 * screenWidth, 0.1 * screenWidth)
     val material = MeshBasicMaterial(literal(map = texture))
     new Mesh(geometry, material)
-
-  cube.position.y += 1
-
-  val line =
-    val points = js.Array(
-      new Vector3(-1.5, 0, 0),
-      new Vector3(0, 1.5, 0),
-      new Vector3(1.5, 0, 0)      
-    )
-    val geometry = BufferGeometry()
-    geometry.setFromPoints(points)
-    val material = LineBasicMaterial(literal(map = 0x0000ff))
-    new Line(geometry, material)
 
   val title =
     val font = Font(helvetiker)
     val parameters = literal(
       font = font,
-      size = 0.5,
-      height = 0.2
+      size = 0.1 * screenWidth,
+      height = 0.05 * screenWidth
     )
     val geometry = TextGeometry("Hello!", parameters)
     val material = MeshBasicMaterial(literal(map = texture))
     new Mesh(geometry, material)
     
-  title.position.x -= 0.75
+  title.position.x -= 0.1 * screenWidth 
 
-  add(title)
+  // add(title)
   add(cube)
-  add(line)
   
   def nextFrame(): Unit =
-    line.rotation.y += 0.02
-    cube.rotation.x += 0.002
-    cube.rotation.y += 0.01
+    cube.rotation.y += 0.1
     title.rotation.y += 0.001
   
   
