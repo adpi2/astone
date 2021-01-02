@@ -29,9 +29,9 @@ class FaceDetector(cascade: pico.Cascade, height: Int, width: Int):
     val detections = pico.run_cascade(image, cascade, params)
     val updated = updateMemory(detections)
     val faces = pico.cluster_detections(updated, 0.2)
-    for face <- faces.sortBy(face => -face(3)).headOption
+    for d <- faces.maxByOption(d => d(3)) if d(3) > 50
     yield
-      FaceDetection(face(1), face(0), face(2))
+      FaceDetection(d(1), d(0), d(2))
 
   private def rgbaToGrayscale(rgba: js.Array[Int]): js.Array[Int] =
     val gray = new js.Array[Int](height * width)
