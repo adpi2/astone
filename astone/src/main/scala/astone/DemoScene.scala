@@ -19,9 +19,11 @@ class DemoScene(screenWidth: Double, screenHeight: Double) extends facade.three.
   texture.wrapT = RepeatWrapping
   
   val cube =
-    val geometry = BoxGeometry(0.1 * screenWidth, 0.1 * screenWidth, 0.1 * screenWidth)
+    val geometry = BoxGeometry(0.3 * screenHeight, 0.3 * screenHeight, 0.3 * screenHeight)
     val material = MeshBasicMaterial(literal(map = texture))
     new Mesh(geometry, material)
+
+  // cube.position.z += -1d * screenHeight
 
   val title =
     val font = Font(helvetiker)

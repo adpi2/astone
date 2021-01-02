@@ -15,7 +15,7 @@ import facade.three._
 import facade.pico
 import facade.web._
 
-import astone.model.FaceDetection
+import astone.model._
 
 object App:
   private val defaultWidth = 320
@@ -88,7 +88,7 @@ object App:
 
     val width_mm = 345.6
     // val heigth_mm = 194.4
-    val head_mm = 160
+    val head_mm = 180d
     val headSize = head_mm * width / width_mm
     val diagViewAngle = Math.toRadians(78D)
     
@@ -98,8 +98,10 @@ object App:
     val screenWidth = width
     val screenHeight = window.innerHeight * width / window.innerWidth
 
+    val webcam = Webcam(110d, focal, width, height)
+
     val demoScene = DemoScene(screenWidth, screenHeight)
-    val scene = RealScene(focal, width, height, screenWidth, screenHeight, headSize)
+    val scene = RealScene(webcam, screenWidth, screenHeight, headSize)
     val topCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 3d * focal)
     topCamera.position.y = 1.5 * height
     topCamera.position.z = 1.5 * defaultHeight
@@ -123,7 +125,7 @@ object App:
         drawDetection(ctx, detection)
       frontView.render(scene, frontCamera)
       topView.render(scene, topCamera)
-      demoScene.nextFrame()
+      // demoScene.nextFrame()
       screenView.render(demoScene, scene.headCam)
       window.requestAnimationFrame(_ => loop())
 
@@ -137,18 +139,3 @@ object App:
     ctx.strokeStyle = "red"
     ctx.stroke()
 
-  // private def setupDemoScene(): Unit =
-  //   val camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-  //   val renderer = new WebGLRenderer()
-  //   renderer.setSize(window.innerWidth, window.innerHeight)
-
-  //   camera.position.z = 2
-
-  //   def animate(): Unit =
-  //     window.requestAnimationFrame(_ => animate())
-  //     DemoScene.nextFrame()
-  //     renderer.render(DemoScene, camera)
-
-  //   animate()
-    
-  //   document.body.appendChild(renderer.domElement)
