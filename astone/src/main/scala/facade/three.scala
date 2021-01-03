@@ -77,6 +77,18 @@ object three extends js.Object:
     var matrixAutoUpdate: Boolean = js.native
 
   
+  /* Lights */
+  @js.native
+  class DirectionalLight(color: Int, intensity: Double) extends Light(js.native, js.native)
+
+  @js.native
+  class Light(color: Int, intensity: Double) extends Object3D
+
+  @js.native
+  class HemisphereLight(skyColor: Int = 0xffffff, groundColor: Int = 0xffffff, intensity: Double = 1d)
+    extends Light(js.native, js.native)
+  
+  
   /* Loaders */
   @js.native
   class FontLoader() extends js.Object:
@@ -99,6 +111,9 @@ object three extends js.Object:
 
   @js.native
   class MeshBasicMaterial(parameters: js.Dynamic) extends Material()
+
+  @js.native
+  class MeshStandardMaterial(parameters: js.Dynamic) extends Material()
 
 
   /* Maths */

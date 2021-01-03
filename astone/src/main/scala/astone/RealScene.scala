@@ -5,18 +5,18 @@ import facade.three._
 import astone.model._
 
 class RealScene(webcam: Webcam, screenWidth: Double, screenHeight: Double, headSize: Double) extends Scene:
-  private val fov = Math.toDegrees(2d * Math.atan(webcam.height * 0.5 / webcam.focal))
+  private val fov = Math.toDegrees(2 * Math.atan(webcam.height * 0.5 / webcam.focal))
 
   private val origin =
-    val geometry = SphereGeometry(30d, 10, 10)
+    val geometry = SphereGeometry(30, 10, 10)
     val material = MeshBasicMaterial(literal(color = 0x0000ff))
     Mesh(geometry, material)
 
-  private val webcamObj = PerspectiveCamera(fov, webcam.width / webcam.height, webcam.focal, 3d * webcam.focal)
+  private val webcamObj = PerspectiveCamera(fov, webcam.width / webcam.height, webcam.focal, 3 * webcam.focal)
   private val webcamHelper = CameraHelper(webcamObj)
 
   webcamObj.position.y = webcam.y
-  webcamObj.lookAt(0d, webcam.y, webcam.focal)
+  webcamObj.lookAt(0, webcam.y, webcam.focal)
 
   private val screen =
     val geometry = PlaneGeometry(screenWidth, screenHeight)
@@ -28,7 +28,7 @@ class RealScene(webcam: Webcam, screenWidth: Double, screenHeight: Double, headS
     val material = MeshBasicMaterial(literal(color = 0xff0000))
     Mesh(geometry, material)
 
-  val headCam = PerspectiveCamera(fov, screenWidth / screenHeight, 0.1 * webcam.focal, 10d * webcam.focal)
+  val headCam = PerspectiveCamera(fov, screenWidth / screenHeight, 0.1 * webcam.focal, 10 * webcam.focal)
   private val headCamHelper = CameraHelper(headCam)
 
   private val head =
@@ -37,10 +37,10 @@ class RealScene(webcam: Webcam, screenWidth: Double, screenHeight: Double, headS
     group.add(headCam)
     group
 
-  head.position.z = 2d * webcam.focal
+  head.position.z = 2 * webcam.focal
   // counteract different front orientation of cameras vs group
   headCam.rotation.y = Math.PI
-  head.lookAt(0d, 0d, 0d)
+  head.lookAt(0, 0, 0)
 
   add(origin)
   add(webcamObj)

@@ -9,9 +9,9 @@ import facade.three._
 @js.native
 val tisTheSeason: String = js.native
 
-@JSImport("three/examples/fonts/helvetiker_bold.typeface.json", JSImport.Default)
-@js.native
-val helvetiker: js.Object = js.native
+// @JSImport("three/examples/fonts/helvetiker_bold.typeface.json", JSImport.Default)
+// @js.native
+// val helvetiker: js.Object = js.native
 
 class DemoScene(screenWidth: Double, screenHeight: Double) extends facade.three.Scene:
   val texture = TextureLoader().load(tisTheSeason)
@@ -20,29 +20,23 @@ class DemoScene(screenWidth: Double, screenHeight: Double) extends facade.three.
   
   val cube =
     val geometry = BoxGeometry(0.3 * screenHeight, 0.3 * screenHeight, 0.3 * screenHeight)
-    val material = MeshBasicMaterial(literal(map = texture))
+    val material = MeshStandardMaterial(literal(map = texture))
     new Mesh(geometry, material)
 
-  // cube.position.z += -1d * screenHeight
+  cube.position.z -= 0.15 * screenHeight
+  
+  val hemiLight = HemisphereLight(0xffffdd, 0x000000, 0.6)
+  hemiLight.lookAt(screenHeight, 0, 0)
 
-  val title =
-    val font = Font(helvetiker)
-    val parameters = literal(
-      font = font,
-      size = 0.1 * screenWidth,
-      height = 0.05 * screenWidth
-    )
-    val geometry = TextGeometry("Hello!", parameters)
-    val material = MeshBasicMaterial(literal(map = texture))
-    new Mesh(geometry, material)
-    
-  title.position.x -= 0.1 * screenWidth 
+  val windowLight = DirectionalLight(0xddddff, 0.7)
+  windowLight.position.z = screenHeight
+  windowLight.position.x = -screenHeight
 
-  // add(title)
   add(cube)
+  add(hemiLight)
+  add(windowLight)
   
   def nextFrame(): Unit =
     cube.rotation.y += 0.1
-    title.rotation.y += 0.001
   
   

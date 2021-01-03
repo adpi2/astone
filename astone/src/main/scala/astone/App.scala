@@ -88,17 +88,17 @@ object App:
 
     val width_mm = 345.6
     // val heigth_mm = 194.4
-    val head_mm = 180d
+    val head_mm = 175
     val headSize = head_mm * width / width_mm
-    val diagViewAngle = Math.toRadians(78D)
+    val diagViewAngle = Math.toRadians(78)
     
     val diag = Math.sqrt(width * width + height * height)
-    val focal = diag / (2D * Math.tan(diagViewAngle / 2D))
+    val focal = 0.5 * diag / Math.tan(diagViewAngle / 2)
 
     val screenWidth = width
     val screenHeight = window.innerHeight * width / window.innerWidth
 
-    val webcam = Webcam(110d, focal, width, height)
+    val webcam = Webcam(110, focal, width, height)
 
     val demoScene = DemoScene(screenWidth, screenHeight)
     val scene = RealScene(webcam, screenWidth, screenHeight, headSize)
@@ -107,18 +107,18 @@ object App:
     topCamera.position.z = 1.5 * defaultHeight
     topCamera.lookAt(0d, 0d, 1.5 * defaultHeight)
 
-    val frontCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0d, 6d * focal)
+    val frontCamera = OrthographicCamera(-1.5 * width, 1.5 * width, 1.5 * defaultHeight, -1.5 * defaultHeight, 0, 6d * focal)
     frontCamera.position.y = 0.5 * height 
     frontCamera.position.z = 5d * focal
-    frontCamera.lookAt(0d, 0.5 * height, 0d)
+    frontCamera.lookAt(0, 0.5 * height, 0)
 
     val ctx = cam.getContext("2d")
       .asInstanceOf[CanvasRenderingContext2D]
     val detector = FaceDetector(cascade, height, width)
 
     def loop(): Unit =
-      ctx.drawImage(video, 0D, 0D, width, height)
-      val rgba = ctx.getImageData(0D, 0D, width, height).data
+      ctx.drawImage(video, 0, 0, width, height)
+      val rgba = ctx.getImageData(0, 0, width, height).data
       for detection <- detector.detect(rgba)
       do 
         scene.computeHeadPosition(detection)
@@ -134,8 +134,8 @@ object App:
   private def drawDetection(ctx: CanvasRenderingContext2D, face: FaceDetection): Unit =
     val (x, y, scale) = (face.x, face.y, face.scale)
     ctx.beginPath()
-    ctx.arc(x, y, 0.5 * scale, 0d, 2d * Math.PI, false)
-    ctx.lineWidth = 3d
+    ctx.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
+    ctx.lineWidth = 3
     ctx.strokeStyle = "red"
     ctx.stroke()
 
