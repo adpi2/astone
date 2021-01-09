@@ -10,11 +10,11 @@ module.exports = {
   devtool: 'source-map',
   module: {
     rules: [
-      {
-        test: /\.js$/i,
-        enforce: 'pre',
-        use: ['source-map-loader']
-      },
+      // {
+      //   test: /\.js$/i,
+      //   enforce: 'pre',
+      //   use: ['source-map-loader']
+      // },
       {
         test: /\.(png|svg|jpe?g|gif|cascade)$/i,
         use: ['url-loader']

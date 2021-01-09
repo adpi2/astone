@@ -1,3 +1,3 @@
 package astone.model
 
-class FaceDetection(val x: Double, val y: Double, val scale: Double)
+case class FaceDetection(x: Double, y: Double, scale: Double)

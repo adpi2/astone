@@ -56,7 +56,8 @@ object three extends js.Object:
   class PlaneGeometry(
     width: Double = 1d, height: Double = 1d,
     widthSegments: Int = 1, heightSegments: Int = 1
-  ) extends Geometry()
+  ) extends Geometry():
+    def parameters: js.Object = js.native
 
   @js.native
   class SphereGeometry(
