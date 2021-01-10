@@ -51,7 +51,7 @@ object App:
         // document.body.appendChild(videoElement)
         videoElement.onloadedmetadata = _ => onCamLoaded(videoElement, cascade, screenView)
   
-  private def onCamLoaded(video: Video, cascade: pico.Cascade, screenView: WebGLRenderer): Unit =    
+  private def onCamLoaded(video: Video, cascade: pico.Cascade, screenView: WebGLRenderer): Unit =
     val screenWidth = 1920
     val screenWidth_mm = 345.6
     val headSize_mm = 175
@@ -59,6 +59,11 @@ object App:
 
     val webcamSettings = WebcamSettings(650, diagViewAngle = 78, video.videoWidth, video.videoHeight)
     val windowSettings = WindowSettings(window.innerWidth, window.innerHeight)
+
+    val canvasCtx = 
+      canvas(widthA := webcamSettings.width, heightA := webcamSettings.height, display := "none")
+        .render
+        .getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
     val monitor = DetectionMonitor(320, webcamSettings, windowSettings)
     document.body.appendChild(monitor.domElement)
@@ -69,7 +74,9 @@ object App:
     val detector = FaceDetector(cascade, webcamSettings)
 
     def loop(): Unit =
-      val rgba = monitor.drawImage(video)
+      canvasCtx.drawImage(video, 0, 0, webcamSettings.width, webcamSettings.height)
+      val rgba = canvasCtx.getImageData(0, 0, webcamSettings.width, webcamSettings.height).data
+      monitor.drawImage(video)
       for detection <- detector.detect(rgba)
       do
         scene.onHeadMoved(

@@ -17,10 +17,11 @@ import astone.model._
 import astone.scene.VirtualReality
 
 class DetectionMonitor(viewWidth: Int, webcamSettings: WebcamSettings, windowSettings: WindowSettings):
-  val viewHeight = webcamSettings.height * viewWidth / webcamSettings.width
+  val ratio = viewWidth.toDouble / webcamSettings.width
+  val viewHeight = webcamSettings.height * ratio
 
   // width refer to style width, so we use widthA instead 
-  val camView = canvas(id := "cam-view", widthA := webcamSettings.width, heightA := webcamSettings.height).render
+  val camView = canvas(id := "cam-view", widthA := viewWidth, heightA := viewHeight).render
   val vCamView = canvas(id := "vcam-view", widthA := viewWidth, heightA := viewHeight).render
   val frontView = canvas(id := "front-view", widthA := viewWidth, heightA := viewHeight).render
   val topView = canvas(id := "top-view", widthA := viewWidth, heightA := viewHeight).render
@@ -55,12 +56,11 @@ class DetectionMonitor(viewWidth: Int, webcamSettings: WebcamSettings, windowSet
 
   val ctx = camView.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
-  def drawImage(video: Video): js.Array[Int] =
-    ctx.drawImage(video, 0, 0, webcamSettings.width, webcamSettings.height)
-    ctx.getImageData(0, 0, webcamSettings.width, webcamSettings.height).data
+  def drawImage(video: Video): Unit =
+    ctx.drawImage(video, 0, 0, viewWidth, viewHeight)
 
   def onDetection(face: FaceDetection, scene: VirtualReality): Unit =
-    val (x, y, scale) = (face.x, face.y, face.scale)
+    val (x, y, scale) = (face.x * ratio, face.y * ratio, face.scale * ratio)
     ctx.beginPath()
     ctx.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
     ctx.lineWidth = 3
