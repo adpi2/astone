@@ -19,7 +19,9 @@ import facade.web._
 import astone.model._
 import astone.scene._
 
-class DetectionMonitor(viewWidth: Int, viewHeight: Int, webcamSettings: WebcamSettings):
+class DetectionMonitor(viewWidth: Int, webcamSettings: WebcamSettings, windowSettings: WindowSettings):
+  val viewHeight = webcamSettings.height * viewWidth / webcamSettings.width
+
   // width refer to style width, so we use widthA instead 
   val camView = canvas(id := "cam-view", widthA := webcamSettings.width, heightA := webcamSettings.height).render
   val vCamView = canvas(id := "vcam-view", widthA := viewWidth, heightA := viewHeight).render
@@ -32,20 +34,27 @@ class DetectionMonitor(viewWidth: Int, viewHeight: Int, webcamSettings: WebcamSe
   val top = WebGLRenderer(literal(canvas = topView))
 
   val topCamera = OrthographicCamera(
-    -1.5 * webcamSettings.width, 1.5 * webcamSettings.width,
-    1.5 * 240, -1.5 * 240, 0, 3d * webcamSettings.focal
-    )
-  topCamera.position.y = 1.5 * webcamSettings.height
-  topCamera.position.z = 1.5 * 240
-  topCamera.lookAt(0d, 0d, 1.5 * 240)
+    left = -1.5 * windowSettings.width,
+    right = 1.5 * windowSettings.width,
+    top = 1.5 * webcamSettings.height * windowSettings.width / webcamSettings.width,
+    bottom = -1.5 * webcamSettings.height * windowSettings.width / webcamSettings.width,
+    near = 0,
+    far = 3 * windowSettings.height
+  )
+  topCamera.position.y = 1.5 * windowSettings.height
+  topCamera.position.z = 1.5 * webcamSettings.height * windowSettings.width / webcamSettings.width
+  topCamera.lookAt(0d, 0d, 1.5 * webcamSettings.height * windowSettings.width / webcamSettings.width)
 
   val frontCamera = OrthographicCamera(
-    -1.5 * webcamSettings.width, 1.5 * webcamSettings.width,
-    1.5 * 240, -1.5 * 240, 0, 6d * webcamSettings.focal
+    left = -1.5 * windowSettings.width,
+    right = 1.5 * windowSettings.width,
+    top = 1.5 * webcamSettings.height * windowSettings.width / webcamSettings.width,
+    bottom = -1.5 * webcamSettings.height * windowSettings.width / webcamSettings.width,
+    near = 0,
+    far = 3 * windowSettings.width * webcamSettings.focal / webcamSettings.width
   )
-  frontCamera.position.y = 0.5 * webcamSettings.height 
-  frontCamera.position.z = 5d * webcamSettings.focal
-  frontCamera.lookAt(0, 0.5 * webcamSettings.height, 0)
+  frontCamera.position.z = 3 * windowSettings.width * webcamSettings.focal / webcamSettings.width
+  frontCamera.lookAt(0, 0, 0)
 
   val ctx = camView.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 

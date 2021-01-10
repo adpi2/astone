@@ -4,7 +4,7 @@ import scala.scalajs.js.Dynamic.literal
 import facade.three._
 import astone.model._
   
-class VirtualReality(webcamSettings: WebcamSettings, screenSettings: ScreenSettings, headSize: Double) extends Scene:
+class VirtualReality(webcamSettings: WebcamSettings, windowSettings: WindowSettings, headSize: Double) extends Scene:
   val fov = Math.toDegrees(2 * Math.atan(webcamSettings.height * 0.5 / webcamSettings.focal))
     
   val origin =
@@ -12,13 +12,13 @@ class VirtualReality(webcamSettings: WebcamSettings, screenSettings: ScreenSetti
     val material = MeshBasicMaterial(literal(color = 0x0000ff))
     Mesh(geometry, material)
 
-  val webcam = PerspectiveCamera(fov, webcamSettings.width / webcamSettings.height, webcamSettings.focal, 10 * webcamSettings.focal)
+  val webcam = PerspectiveCamera(fov, webcamSettings.width.toDouble / webcamSettings.height, webcamSettings.focal, 10 * webcamSettings.focal)
   val webcamHelper = CameraHelper(webcam)
   webcam.position.y = webcamSettings.y
   webcam.lookAt(0, webcamSettings.y, webcamSettings.focal)
 
   val screen =
-    val geometry = PlaneGeometry(screenSettings.width, screenSettings.height)
+    val geometry = PlaneGeometry(windowSettings.width, windowSettings.height)
     val material = MeshBasicMaterial(literal(color = 0x00ff00, side = DoubleSide))
     Mesh(geometry, material)
 
@@ -27,7 +27,7 @@ class VirtualReality(webcamSettings: WebcamSettings, screenSettings: ScreenSetti
     val material = MeshBasicMaterial(literal(color = 0xff0000))
     Mesh(geometry, material)
 
-  val headCam = PerspectiveCamera(fov, screenSettings.width / screenSettings.height, 0.1 * webcamSettings.focal, 10 * webcamSettings.focal)
+  val headCam = PerspectiveCamera(fov, windowSettings.width / windowSettings.height, 0.1 * webcamSettings.focal, 10 * webcamSettings.focal)
   val headCamHelper = CameraHelper(headCam)
 
   val head =
@@ -55,7 +55,7 @@ class VirtualReality(webcamSettings: WebcamSettings, screenSettings: ScreenSetti
 
     val fullWidth = webcamSettings.width * z / webcamSettings.focal
     val fullHeight = webcamSettings.height * z / webcamSettings.focal
-    val offsetX = 0.5 * (fullWidth - screenSettings.width) - x
-    val offsetY = 0.5 * (fullHeight - screenSettings.height) + y
-    headCam.setViewOffset(fullWidth, fullHeight, offsetX, offsetY, screenSettings.width, screenSettings.height)
+    val offsetX = 0.5 * (fullWidth - windowSettings.width) - x
+    val offsetY = 0.5 * (fullHeight - windowSettings.height) + y
+    headCam.setViewOffset(fullWidth, fullHeight, offsetX, offsetY, windowSettings.width, windowSettings.height)
     headCamHelper.update()

@@ -53,37 +53,27 @@ object App:
 
       video.onloadedmetadata = _ => onCamLoaded(video, cascade, screenView)  
   
-  private def onCamLoaded(video: HTMLVideoElement, cascade: pico.Cascade, screenView: WebGLRenderer): Unit =
-    val width = 320
-    val height = (width * video.videoHeight) / video.videoWidth
-    
-    val width_mm = 345.6
-    // val heigth_mm = 194.4
-    val head_mm = 175
-    val headSize = head_mm * width / width_mm
-    val diagViewAngle = Math.toRadians(78)
-    
-    val diag = Math.sqrt(width * width + height * height)
-    val focal = 0.5 * diag / Math.tan(diagViewAngle / 2)
+  private def onCamLoaded(video: HTMLVideoElement, cascade: pico.Cascade, screenView: WebGLRenderer): Unit =    
+    val screenWidth = 1920
+    val screenWidth_mm = 345.6
+    val headSize_mm = 175
+    val headSize = headSize_mm * screenWidth / screenWidth_mm
 
-    val screenSettings = ScreenSettings(
-      width,
-      window.innerHeight * width / window.innerWidth
-    )
-    val webcamSettings = WebcamSettings(110, focal, width, height)
+    val webcamSettings = WebcamSettings(650, diagViewAngle = 78, video.videoWidth, video.videoHeight)
+    val windowSettings = WindowSettings(window.innerWidth, window.innerHeight)
 
-    val monitor = DetectionMonitor(320, 240, webcamSettings)
+    val monitor = DetectionMonitor(320, webcamSettings, windowSettings)
     document.body.appendChild(monitor.domElement)
 
-    val demoScene = DemoScene(screenSettings)
-    val scene = VirtualReality(webcamSettings, screenSettings, headSize)
+    val demoScene = DemoScene(windowSettings)
+    val scene = VirtualReality(webcamSettings, windowSettings, headSize)
 
-    val detector = FaceDetector(cascade, height, width)
+    val detector = FaceDetector(cascade, webcamSettings)
 
     def loop(): Unit =
       val rgba = monitor.drawImage(video)
       for detection <- detector.detect(rgba)
-      do 
+      do
         scene.onHeadMoved(
           x = (0.5 * webcamSettings.width - detection.x) * headSize / detection.scale,
           y = (0.5 * webcamSettings.height- detection.y) * headSize / detection.scale + webcamSettings.y,

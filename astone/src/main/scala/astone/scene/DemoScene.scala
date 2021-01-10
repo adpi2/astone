@@ -14,24 +14,24 @@ val tisTheSeason: String = js.native
 // @js.native
 // val helvetiker: js.Object = js.native
 
-class DemoScene(screenSettings: ScreenSettings) extends facade.three.Scene:
+class DemoScene(windowSettigs: WindowSettings) extends facade.three.Scene:
   val texture = TextureLoader().load(tisTheSeason)
   texture.wrapS = RepeatWrapping
   texture.wrapT = RepeatWrapping
   
   val cube =
-    val geometry = BoxGeometry(0.3 * screenSettings.height, 0.3 * screenSettings.height, 0.3 * screenSettings.height)
+    val geometry = BoxGeometry(0.3 * windowSettigs.height, 0.3 * windowSettigs.height, 0.3 * windowSettigs.height)
     val material = MeshStandardMaterial(literal(map = texture))
     new Mesh(geometry, material)
 
-  cube.position.z -= 0.15 * screenSettings.height
+  cube.position.z -= 0.15 * windowSettigs.height
   
   val hemiLight = HemisphereLight(0xffffdd, 0x000000, 0.6)
-  hemiLight.lookAt(screenSettings.height, 0, 0)
+  hemiLight.lookAt(windowSettigs.height, 0, 0)
 
   val windowLight = DirectionalLight(0xddddff, 0.7)
-  windowLight.position.z = screenSettings.height
-  windowLight.position.x = -screenSettings.height
+  windowLight.position.z = windowSettigs.height
+  windowLight.position.x = -windowSettigs.height
 
   add(cube)
   add(hemiLight)
