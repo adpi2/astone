@@ -1,12 +1,11 @@
 package astone
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.language.implicitConversions
 
 import scala.scalajs.js.typedarray.Int8Array
 
 import org.scalajs.dom._
-import org.scalajs.dom.raw.{HTMLCanvasElement, HTMLVideoElement, Node}
+import org.scalajs.dom.html._
 import org.scalajs.dom.experimental.Fetch
 import org.scalajs.dom.experimental.webrtc._
 import org.scalajs.dom.experimental.mediastream.MediaStreamConstraints
@@ -15,7 +14,6 @@ import scalatags.JsDom.all._
 
 import facade.three._
 import facade.pico
-import facade.web._
 
 import astone.model._
 import astone.scene._
@@ -41,19 +39,19 @@ object App:
       val screenView = new WebGLRenderer()
       screenView.setSize(window.innerWidth, window.innerHeight)
       document.body.appendChild(screenView.domElement)
-    
-      val video = document.createElement("video").asInstanceOf[HTMLVideoElement]
-      video.setAttribute("autoplay", "1")
-      video.setAttribute("style", "display:none")
-      document.body.appendChild(video)
 
       val mediaConstraints = MediaStreamConstraints(video = true)
       for stream <- window.navigator.mediaDevices.getUserMedia(mediaConstraints).toFuture
-      do video.srcObject = stream
-
-      video.onloadedmetadata = _ => onCamLoaded(video, cascade, screenView)  
+      do 
+        val videoElement = video(
+          attr("autoplay") := 1,
+          display := "none",
+          attr("srcObject") := stream
+        ).render
+        // document.body.appendChild(videoElement)
+        videoElement.onloadedmetadata = _ => onCamLoaded(videoElement, cascade, screenView)
   
-  private def onCamLoaded(video: HTMLVideoElement, cascade: pico.Cascade, screenView: WebGLRenderer): Unit =    
+  private def onCamLoaded(video: Video, cascade: pico.Cascade, screenView: WebGLRenderer): Unit =    
     val screenWidth = 1920
     val screenWidth_mm = 345.6
     val headSize_mm = 175

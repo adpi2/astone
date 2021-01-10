@@ -5,19 +5,16 @@ import scala.language.implicitConversions
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
-import scala.scalajs.js.typedarray.Int8Array
 
 import org.scalajs.dom._
-import org.scalajs.dom.html._
+import org.scalajs.dom.html.Video
 
 import scalatags.JsDom.all._
 
 import facade.three._
-import facade.pico
-import facade.web._
 
 import astone.model._
-import astone.scene._
+import astone.scene.VirtualReality
 
 class DetectionMonitor(viewWidth: Int, webcamSettings: WebcamSettings, windowSettings: WindowSettings):
   val viewHeight = webcamSettings.height * viewWidth / webcamSettings.width

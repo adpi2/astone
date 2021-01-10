@@ -3,8 +3,6 @@ package astone
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
-import org.scalajs.dom.CanvasRenderingContext2D
-
 import facade.pico
 
 import astone.model._
