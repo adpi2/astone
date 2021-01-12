@@ -58,4 +58,5 @@ class VirtualReality(webcamSettings: WebcamSettings, windowSettings: WindowSetti
     val offsetX = 0.5 * (fullWidth - windowSettings.width) - x
     val offsetY = 0.5 * (fullHeight - windowSettings.height) + y
     headCam.setViewOffset(fullWidth, fullHeight, offsetX, offsetY, windowSettings.width, windowSettings.height)
+    head.updateMatrixWorld(true) // required to use headCam to render an external scene 
     headCamHelper.update()

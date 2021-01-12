@@ -2,7 +2,7 @@ package facade
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-import org.scalajs.dom.raw.HTMLCanvasElement
+import org.scalajs.dom.html.Canvas
 
 @JSImport("three", JSImport.Namespace)
 @js.native
@@ -18,6 +18,8 @@ object three extends js.Object:
   class PerspectiveCamera(fov: Double, aspectRatio: Double, near: Double, far: Double) extends Camera():
     def setViewOffset(fullWidth: Double, fullHeight: Double, x: Double, y: Double, width: Double, height: Double): Unit =
       js.native
+
+    def updateProjectionMatrix(): Unit = js.native
 
   
   /* Constants */
@@ -41,6 +43,9 @@ object three extends js.Object:
     val position: Vector3 = js.native
     val rotation: Euler = js.native
     def lookAt(x: Double, y: Double, z: Double): Unit = js.native
+    def updateMatrix(): Unit = js.native
+    def updateMatrixWorld(force: Boolean): Unit = js.native
+    def updateWorldMatrix(updateParents: Boolean, updateChildren: Boolean): Unit = js.native
 
 
   /* Extras / Core */
@@ -150,8 +155,9 @@ object three extends js.Object:
   @js.native
   class WebGLRenderer(parameters: js.Dynamic = null) extends js.Object:
     def setSize(width: Double, height: Double): Unit = js.native
-    def domElement: HTMLCanvasElement = js.native
+    def domElement: Canvas = js.native
     def render(scene: Scene, camera: Camera): Unit = js.native
+    // var context: 
 
 
   /* Scenes */

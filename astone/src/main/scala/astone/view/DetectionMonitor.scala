@@ -7,7 +7,7 @@ import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 
 import org.scalajs.dom._
-import org.scalajs.dom.html.Video
+import org.scalajs.dom.html.{Video, Div}
 
 import scalatags.JsDom.all._
 
@@ -16,20 +16,37 @@ import facade.three._
 import astone.model._
 import astone.scene.VirtualReality
 
-class DetectionMonitor(viewWidth: Int, webcamSettings: WebcamSettings, windowSettings: WindowSettings):
-  val ratio = viewWidth.toDouble / webcamSettings.width
-  val viewHeight = webcamSettings.height * ratio
+import astone.view.component._
+
+class DetectionMonitor(width: Int, webcamSettings: WebcamSettings, windowSettings: WindowSettings, scene: VirtualReality, video: Video):
+  var viewWidth = width
+  var ratio = viewWidth.toDouble / webcamSettings.width
+  var viewHeight = webcamSettings.height * ratio
+  
+  var face: FaceDetection = null
 
   // width refer to style width, so we use widthA instead 
-  val camView = canvas(id := "cam-view", widthA := viewWidth, heightA := viewHeight).render
-  val vCamView = canvas(id := "vcam-view", widthA := viewWidth, heightA := viewHeight).render
-  val frontView = canvas(id := "front-view", widthA := viewWidth, heightA := viewHeight).render
-  val topView = canvas(id := "top-view", widthA := viewWidth, heightA := viewHeight).render
-  val domElement = div(id := "detection")(div(camView), div(vCamView), div(frontView), div(topView)).render
+  val camView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
+  val vCamView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
+  val frontView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
+  val topView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
+  val domElement = div(
+    marginRight:= "15px",
+    position := "absolute",
+    top := 0,
+    right := 0,
+    zIndex := 100,
+    background := 0x1a1a1a,
+    color := 0xeee,
+    padding := "3px",
+    borderLeft := "2px solid purple"
+  )(camView, vCamView, frontView, topView)
+    .render
+    .leftResizableIn(window)(onWidthChanged)
 
   val vCam = WebGLRenderer(literal(canvas = vCamView))
   val front = WebGLRenderer(literal(canvas = frontView))
-  val top = WebGLRenderer(literal(canvas = topView))
+  val topRenderer = WebGLRenderer(literal(canvas = topView))
 
   val topCamera = OrthographicCamera(
     left = -1.5 * windowSettings.width,
@@ -56,19 +73,33 @@ class DetectionMonitor(viewWidth: Int, webcamSettings: WebcamSettings, windowSet
 
   val ctx = camView.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
-  def drawImage(video: Video): Unit =
-    ctx.drawImage(video, 0, 0, viewWidth, viewHeight)
+  private def animate(): Unit =
+    camView.width = viewWidth
+    camView.height = viewHeight.toInt
+    vCam.setSize(viewWidth, viewHeight)
+    front.setSize(viewWidth, viewHeight)
+    topRenderer.setSize(viewWidth, viewHeight)
 
-  def onDetection(face: FaceDetection, scene: VirtualReality): Unit =
-    val (x, y, scale) = (face.x * ratio, face.y * ratio, face.scale * ratio)
-    ctx.beginPath()
-    ctx.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
-    ctx.lineWidth = 3
-    ctx.strokeStyle = "red"
-    ctx.stroke()
+    ctx.drawImage(video, 0, 0, viewWidth, viewHeight)
+    
+    if face !=null then
+      val (x, y, scale) = (face.x * ratio, face.y * ratio, face.scale * ratio)
+      ctx.beginPath()
+      ctx.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
+      ctx.lineWidth = 3
+      ctx.strokeStyle = "red"
+      ctx.stroke()
 
     vCam.render(scene, scene.webcam)
     front.render(scene, frontCamera)
-    top.render(scene, topCamera)
+    topRenderer.render(scene, topCamera)
 
+  def onDetection(detection: FaceDetection): Unit =
+    face = detection
+    window.requestAnimationFrame(_ => animate())
     
+  def onWidthChanged(width: Double): Unit =
+    viewWidth = width.toInt
+    ratio = width / webcamSettings.width
+    viewHeight = webcamSettings.height * ratio
+    window.requestAnimationFrame(_ => animate())
