@@ -7,8 +7,9 @@ import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 
 import org.scalajs.dom._
-import org.scalajs.dom.html.{Video, Div}
+import org.scalajs.dom.html.{Video, Div, Canvas}
 
+import scalatags.JsDom._
 import scalatags.JsDom.all._
 
 import facade.three._
@@ -18,19 +19,26 @@ import astone.scene.VirtualReality
 
 import astone.view.component._
 
-class DetectionMonitor(width: Int, webcamSettings: WebcamSettings, windowSettings: WindowSettings, scene: VirtualReality, video: Video):
+class DetectionMonitor(
+  width: Int,
+  webcamSettings: WebcamSettings,
+  windowSettings: WindowSettings,
+  scene: VirtualReality,
+  video: Video
+) extends Component[Div]:
   var viewWidth = width
   var ratio = viewWidth.toDouble / webcamSettings.width
   var viewHeight = webcamSettings.height * ratio
   
   var face: FaceDetection = null
 
-  // width refer to style width, so we use widthA instead 
-  val camView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
-  val vCamView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
-  val frontView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
-  val topView = canvas(widthA := viewWidth, heightA := viewHeight, display := "block").render
-  val domElement = div(
+  val camView = section("Webcam", viewWidth, viewHeight)
+  val vCamView = section("Virtual Webcam", viewWidth, viewHeight)
+  val frontView = section("Virtual Front View", viewWidth, viewHeight)
+  val topView = section("Virtual Top View", viewWidth, viewHeight)
+
+  def container = document.body
+  val element: Div = div(
     marginRight:= "15px",
     position := "absolute",
     top := 0,
@@ -40,13 +48,12 @@ class DetectionMonitor(width: Int, webcamSettings: WebcamSettings, windowSetting
     color := 0xeee,
     padding := "3px",
     borderLeft := "2px solid purple"
-  )(camView, vCamView, frontView, topView)
+  )(camView.element, vCamView.element, frontView.element, topView.element)
     .render
-    .leftResizableIn(window)(onWidthChanged)
 
-  val vCam = WebGLRenderer(literal(canvas = vCamView))
-  val front = WebGLRenderer(literal(canvas = frontView))
-  val topRenderer = WebGLRenderer(literal(canvas = topView))
+  val vCam = WebGLRenderer(literal(canvas = vCamView.canvas.element))
+  val front = WebGLRenderer(literal(canvas = frontView.canvas.element))
+  val topRenderer = WebGLRenderer(literal(canvas = topView.canvas.element))
 
   val topCamera = OrthographicCamera(
     left = -1.5 * windowSettings.width,
@@ -71,24 +78,25 @@ class DetectionMonitor(width: Int, webcamSettings: WebcamSettings, windowSetting
   frontCamera.position.z = 3 * windowSettings.width * webcamSettings.focal / webcamSettings.width
   frontCamera.lookAt(0, 0, 0)
 
-  val ctx = camView.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-
   private def animate(): Unit =
-    camView.width = viewWidth
-    camView.height = viewHeight.toInt
+    camView.setSize(viewWidth, viewHeight)
+    vCamView.setSize(viewWidth, viewHeight)
+    frontView.setSize(viewWidth, viewHeight)
+    topView.setSize(viewWidth, viewHeight)
+    
     vCam.setSize(viewWidth, viewHeight)
     front.setSize(viewWidth, viewHeight)
     topRenderer.setSize(viewWidth, viewHeight)
 
-    ctx.drawImage(video, 0, 0, viewWidth, viewHeight)
+    camView.context2D.drawImage(video, 0, 0, viewWidth, viewHeight)
     
     if face !=null then
       val (x, y, scale) = (face.x * ratio, face.y * ratio, face.scale * ratio)
-      ctx.beginPath()
-      ctx.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 3
-      ctx.strokeStyle = "red"
-      ctx.stroke()
+      camView.context2D.beginPath()
+      camView.context2D.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
+      camView.context2D.lineWidth = 3
+      camView.context2D.strokeStyle = "red"
+      camView.context2D.stroke()
 
     vCam.render(scene, scene.webcam)
     front.render(scene, frontCamera)
@@ -103,3 +111,25 @@ class DetectionMonitor(width: Int, webcamSettings: WebcamSettings, windowSetting
     ratio = width / webcamSettings.width
     viewHeight = webcamSettings.height * ratio
     window.requestAnimationFrame(_ => animate())
+
+  def section(title: String, width: Double, height: Double): MonitorSection =
+    val section = new MonitorSection(title)
+    section.setSize(width, height)
+    section
+
+class MonitorSection(title: String) extends Component[Div]:
+  val canvas: Collapsible[Canvas] = tags.canvas(display := "block").render.collapsible
+  val button = tags.button(display := "block")(title).render
+  button.onclick = (_ => canvas.collapse())
+  
+  def element = div(button, canvas.element).render
+
+  def context2D: CanvasRenderingContext2D =
+    canvas.element.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+
+  def setSize(width: Double, height: Double): Unit =
+    canvas.element.width = width.toInt
+    canvas.element.height = height.toInt
+    canvas.setSize(width, height)
+    button.style.width = s"${width.toInt}px"
+  

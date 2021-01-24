@@ -17,6 +17,7 @@ import facade.pico
 
 import astone.model._
 import astone.scene._
+import astone.view.component._
 
 object App:
   def main(args: Array[String]): Unit =
@@ -65,13 +66,12 @@ object App:
         .render
         .getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
-    
-
     val demoScene = DemoScene(windowSettings)
     val scene = VirtualReality(webcamSettings, windowSettings, headSize)
 
     val monitor = DetectionMonitor(320, webcamSettings, windowSettings, scene, video)
-    document.body.appendChild(monitor.domElement)
+    monitor.leftResizableIn(document.body)(monitor.onWidthChanged)
+    document.body.appendChild(monitor.element)
 
     val detector = FaceDetector(cascade, webcamSettings)
 
