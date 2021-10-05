@@ -26,11 +26,13 @@ class DetectionMonitor(
   scene: VirtualReality,
   video: Video
 ) extends Component[Div]:
+  var sizeChanged = true
   var viewWidth = width
   var ratio = viewWidth.toDouble / webcamSettings.width
   var viewHeight = webcamSettings.height * ratio
   
   var face: FaceDetection = null
+  var faceMoved = true
 
   val camView = section("Webcam", viewWidth, viewHeight)
   val vCamView = section("Virtual Webcam", viewWidth, viewHeight)
@@ -78,39 +80,45 @@ class DetectionMonitor(
   frontCamera.position.z = 3 * windowSettings.width * webcamSettings.focal / webcamSettings.width
   frontCamera.lookAt(0, 0, 0)
 
-  private def animate(): Unit =
-    camView.setSize(viewWidth, viewHeight)
-    vCamView.setSize(viewWidth, viewHeight)
-    frontView.setSize(viewWidth, viewHeight)
-    topView.setSize(viewWidth, viewHeight)
-    
-    vCam.setSize(viewWidth, viewHeight)
-    front.setSize(viewWidth, viewHeight)
-    topRenderer.setSize(viewWidth, viewHeight)
+  def render(): Unit =
+    if sizeChanged then
+      camView.setSize(viewWidth, viewHeight)
+      vCamView.setSize(viewWidth, viewHeight)
+      frontView.setSize(viewWidth, viewHeight)
+      topView.setSize(viewWidth, viewHeight)
+      
+      vCam.setSize(viewWidth, viewHeight)
+      front.setSize(viewWidth, viewHeight)
+      topRenderer.setSize(viewWidth, viewHeight)
 
     camView.context2D.drawImage(video, 0, 0, viewWidth, viewHeight)
     
-    if face !=null then
-      val (x, y, scale) = (face.x * ratio, face.y * ratio, face.scale * ratio)
-      camView.context2D.beginPath()
-      camView.context2D.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
-      camView.context2D.lineWidth = 3
-      camView.context2D.strokeStyle = "red"
-      camView.context2D.stroke()
-
-    vCam.render(scene, scene.webcam)
-    front.render(scene, frontCamera)
-    topRenderer.render(scene, topCamera)
+    if faceMoved || sizeChanged then
+      if face != null then
+        val (x, y, scale) = (face.x * ratio, face.y * ratio, face.scale * ratio)
+        camView.context2D.beginPath()
+        camView.context2D.arc(x, y, 0.5 * scale, 0, 2 * Math.PI, false)
+        camView.context2D.lineWidth = 3
+        camView.context2D.strokeStyle = "red"
+        camView.context2D.stroke()
+    
+      vCam.render(scene, scene.webcam)
+      front.render(scene, frontCamera)
+      topRenderer.render(scene, topCamera)
+    
+    faceMoved = false
+    sizeChanged = false
 
   def onDetection(detection: FaceDetection): Unit =
-    face = detection
-    window.requestAnimationFrame(_ => animate())
+    if (face != detection)
+      face = detection
+      faceMoved = true
     
   def onWidthChanged(width: Double): Unit =
     viewWidth = width.toInt
     ratio = width / webcamSettings.width
     viewHeight = webcamSettings.height * ratio
-    window.requestAnimationFrame(_ => animate())
+    sizeChanged = true
 
   def section(title: String, width: Double, height: Double): MonitorSection =
     val section = new MonitorSection(title)

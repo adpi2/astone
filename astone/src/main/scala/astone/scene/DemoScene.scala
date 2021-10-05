@@ -10,11 +10,8 @@ import astone.model.WindowSettings
 @js.native
 val tisTheSeason: String = js.native
 
-// @JSImport("three/examples/fonts/helvetiker_bold.typeface.json", JSImport.Default)
-// @js.native
-// val helvetiker: js.Object = js.native
-
 class DemoScene(windowSettings: WindowSettings) extends facade.three.Scene:
+
   val texture = TextureLoader().load(tisTheSeason)
   texture.wrapS = RepeatWrapping
   texture.wrapT = RepeatWrapping
@@ -36,8 +33,6 @@ class DemoScene(windowSettings: WindowSettings) extends facade.three.Scene:
   add(cube)
   add(hemiLight)
   add(windowLight)
-  
-  def nextFrame(): Unit =
-    cube.rotation.y += 0.1
+
   
   

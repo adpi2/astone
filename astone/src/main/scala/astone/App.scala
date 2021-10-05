@@ -2,6 +2,7 @@ package astone
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.scalajs.js.Promise
 import scala.scalajs.js.typedarray.Int8Array
 
 import org.scalajs.dom._
@@ -74,21 +75,28 @@ object App:
     document.body.appendChild(monitor.element)
 
     val detector = FaceDetector(cascade, webcamSettings)
+    var detected = true
 
     def loop(): Unit =
       canvasCtx.drawImage(video, 0, 0, webcamSettings.width, webcamSettings.height)
       val rgba = canvasCtx.getImageData(0, 0, webcamSettings.width, webcamSettings.height).data
-      detector.detect(rgba) match
-        case None => monitor.onDetection(null)
-        case Some(face) =>
-          scene.onHeadMoved(
-            x = (0.5 * webcamSettings.width - face.x) * headSize / face.scale,
-            y = (0.5 * webcamSettings.height- face.y) * headSize / face.scale + webcamSettings.y,
-            z = webcamSettings.focal * headSize / face.scale
-          )
-          monitor.onDetection(face)
+      if detected then
+        detected = false
+        new Promise({ (resolve, reject) => 
+          detector.detect(rgba) match
+            case None => monitor.onDetection(null)
+            case Some(face) =>
+              scene.onHeadMoved(
+                x = (0.5 * webcamSettings.width - face.x) * headSize / face.scale,
+                y = (0.5 * webcamSettings.height- face.y) * headSize / face.scale + webcamSettings.y,
+                z = webcamSettings.focal * headSize / face.scale
+              )
+              monitor.onDetection(face)
+          detected = true
+        })
+        monitor.render()
+        screenView.render(demoScene, scene.headCam)
       
-      screenView.render(demoScene, scene.headCam)
       window.requestAnimationFrame(_ => loop())
     
     window.requestAnimationFrame(_ => loop())
